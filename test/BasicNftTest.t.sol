@@ -15,11 +15,7 @@ contract BasicNftTest is Test {
     string public constant PUG =
         "ipfs://bafybeig37ioir76s7mg5oobetncojcm3c3hxasyd4rvid4jqhy4gkaheg4/?filename=0-PUG.json";
 
-    event Transfer(
-        address indexed from,
-        address indexed to,
-        uint256 indexed tokenId
-    );
+    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
 
     function setUp() public {
         deployer = new DeployBasicNft();
@@ -34,10 +30,7 @@ contract BasicNftTest is Test {
         string memory actualName = basicNft.name();
 
         // Assert
-        assertEq(
-            keccak256(abi.encodePacked(expectedName)),
-            keccak256(abi.encodePacked(actualName))
-        );
+        assertEq(keccak256(abi.encodePacked(expectedName)), keccak256(abi.encodePacked(actualName)));
     }
 
     function testSymbolIsCorrect() public view {
@@ -46,10 +39,7 @@ contract BasicNftTest is Test {
         string memory actualSymbol = basicNft.symbol();
 
         // Assert
-        assertEq(
-            keccak256(abi.encodePacked(expectedSymbol)),
-            keccak256(abi.encodePacked(actualSymbol))
-        );
+        assertEq(keccak256(abi.encodePacked(expectedSymbol)), keccak256(abi.encodePacked(actualSymbol)));
     }
 
     function testTokencounterStartsAtZero() public view {
@@ -70,10 +60,6 @@ contract BasicNftTest is Test {
 
         // Assert
         assertEq(basicNft.balanceOf(user), 1);
-        assertEq(
-            keccak256(abi.encodePacked(PUG)),
-            keccak256(abi.encodePacked(basicNft.tokenURI(0)))
-        );
     }
 
     function testMintingIncrementsTokenCounter() public {
@@ -121,5 +107,70 @@ contract BasicNftTest is Test {
 
         // Assert
         assertEq(basicNft.ownerOf(0), user);
+    }
+
+    // TOKEN URI TESTS
+    function testTokenURIIsCorrect() public {
+        // Arrange / Act
+        vm.prank(user);
+        basicNft.mintNft(PUG);
+
+        string memory tokenUri = basicNft.tokenURI(0);
+
+        // Assert
+        assertEq(keccak256(abi.encodePacked(PUG)), keccak256(abi.encodePacked(tokenUri)));
+    }
+
+    function testTokenURIWithEmptyString() public {
+        // Arrange / Act
+        vm.prank(user);
+        basicNft.mintNft("");
+
+        string memory tokenUri = basicNft.tokenURI(0);
+
+        // Assert - Empty string should be stored
+        assertEq(keccak256(abi.encodePacked("")), keccak256(abi.encodePacked(tokenUri)));
+    }
+
+    // TRANSFER TESTS
+    function testOwnerCanTransferNft() public {
+        // Arrange
+        vm.prank(user);
+        basicNft.mintNft(PUG);
+
+        // Act
+        vm.prank(user);
+        basicNft.transferFrom(user, user2, 0);
+
+        // Assert
+        assertEq(basicNft.ownerOf(0), user2);
+        assertEq(basicNft.balanceOf(user), 0);
+        assertEq(basicNft.balanceOf(user2), 1);
+    }
+
+    function testNonOwnerCannotTransferNft() public {
+        //Arrange
+        vm.prank(user);
+        basicNft.mintNft(PUG);
+
+        // Act
+        vm.prank(user2);
+        vm.expectRevert(); // ERC721: transfer caller is not owner nor approved
+        basicNft.transferFrom(user, user2, 0);
+    }
+
+    // APPROVAL TESTS
+    // BALANCE TESTS
+    // OWNER OF TESTS
+    // EDGE CASE TESTS
+    // FUZZ TESTS
+    function testFuzzMintingWithRandomURI(string memory randomUri) public {
+        // Arrange / Act
+        vm.prank(user);
+        basicNft.mintNft(randomUri);
+
+        // Assert
+        assertEq(basicNft.balanceOf(user), 1);
+        assertEq(keccak256(abi.encodePacked(basicNft.tokenURI(0))), keccak256(abi.encodePacked(randomUri)));
     }
 }
