@@ -15,6 +15,12 @@ contract BasicNftTest is Test {
     string public constant PUG =
         "ipfs://bafybeig37ioir76s7mg5oobetncojcm3c3hxasyd4rvid4jqhy4gkaheg4/?filename=0-PUG.json";
 
+    event Transfer(
+        address indexed from,
+        address indexed to,
+        uint256 indexed tokenId
+    );
+
     function setUp() public {
         deployer = new DeployBasicNft();
         basicNft = deployer.run();
@@ -98,5 +104,22 @@ contract BasicNftTest is Test {
         assertEq(basicNft.balanceOf(user2), 1);
         assertEq(basicNft.ownerOf(0), user);
         assertEq(basicNft.ownerOf(1), user2);
+    }
+
+    function testMintEmitsTransferEvent() public {
+        // Arrange / Act / Assert
+        vm.prank(user);
+        vm.expectEmit(true, true, true, false, address(basicNft));
+        emit Transfer(address(0), user, 0);
+        basicNft.mintNft(PUG);
+    }
+
+    function testMintSetsCorrectOwner() public {
+        // Arrange / Act
+        vm.prank(user);
+        basicNft.mintNft(PUG);
+
+        // Assert
+        assertEq(basicNft.ownerOf(0), user);
     }
 }
