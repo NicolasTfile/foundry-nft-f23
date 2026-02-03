@@ -9,13 +9,17 @@ import {BasicNft} from "src/BasicNft.sol";
 contract BasicNftTest is Test {
     DeployBasicNft public deployer;
     BasicNft public basicNft;
-    address public user = makeAddr("user");
+    address public user = makeAddr("user0");
     address public user2 = makeAddr("user2");
 
     string public constant PUG =
         "ipfs://bafybeig37ioir76s7mg5oobetncojcm3c3hxasyd4rvid4jqhy4gkaheg4/?filename=0-PUG.json";
 
-    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
+    event Transfer(
+        address indexed from,
+        address indexed to,
+        uint256 indexed tokenId
+    );
 
     function setUp() public {
         deployer = new DeployBasicNft();
@@ -30,7 +34,10 @@ contract BasicNftTest is Test {
         string memory actualName = basicNft.name();
 
         // Assert
-        assertEq(keccak256(abi.encodePacked(expectedName)), keccak256(abi.encodePacked(actualName)));
+        assertEq(
+            keccak256(abi.encodePacked(expectedName)),
+            keccak256(abi.encodePacked(actualName))
+        );
     }
 
     function testSymbolIsCorrect() public view {
@@ -39,7 +46,10 @@ contract BasicNftTest is Test {
         string memory actualSymbol = basicNft.symbol();
 
         // Assert
-        assertEq(keccak256(abi.encodePacked(expectedSymbol)), keccak256(abi.encodePacked(actualSymbol)));
+        assertEq(
+            keccak256(abi.encodePacked(expectedSymbol)),
+            keccak256(abi.encodePacked(actualSymbol))
+        );
     }
 
     function testTokencounterStartsAtZero() public view {
@@ -118,7 +128,10 @@ contract BasicNftTest is Test {
         string memory tokenUri = basicNft.tokenURI(0);
 
         // Assert
-        assertEq(keccak256(abi.encodePacked(PUG)), keccak256(abi.encodePacked(tokenUri)));
+        assertEq(
+            keccak256(abi.encodePacked(PUG)),
+            keccak256(abi.encodePacked(tokenUri))
+        );
     }
 
     function testTokenURIWithEmptyString() public {
@@ -129,7 +142,10 @@ contract BasicNftTest is Test {
         string memory tokenUri = basicNft.tokenURI(0);
 
         // Assert - Empty string should be stored
-        assertEq(keccak256(abi.encodePacked("")), keccak256(abi.encodePacked(tokenUri)));
+        assertEq(
+            keccak256(abi.encodePacked("")),
+            keccak256(abi.encodePacked(tokenUri))
+        );
     }
 
     // TRANSFER TESTS
@@ -171,6 +187,9 @@ contract BasicNftTest is Test {
 
         // Assert
         assertEq(basicNft.balanceOf(user), 1);
-        assertEq(keccak256(abi.encodePacked(basicNft.tokenURI(0))), keccak256(abi.encodePacked(randomUri)));
+        assertEq(
+            keccak256(abi.encodePacked(basicNft.tokenURI(0))),
+            keccak256(abi.encodePacked(randomUri))
+        );
     }
 }
