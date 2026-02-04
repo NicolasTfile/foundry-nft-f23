@@ -24,6 +24,8 @@ contract MintBasicNft is Script {
     }
 }
 
+// I could also use cast send instead, but here are the interactions contracts for moodNft
+
 contract MintMoodNft is Script {
     function run() external {
         address mostRecentlyDeployed = DevOpsTools.get_most_recent_deployment("MoodNft", block.chainid);
